@@ -12,25 +12,5 @@
       "binding": "birthday_kv",
       "id": "ns-2Sd3gvhekE9z"
     }
-  ],
-  "headers": {
-    "/*.html": {
-      "Cache-Control": "no-cache"
-    },
-    "/*.js": {
-      "Content-Type": "application/javascript; charset=utf-8",
-      "Cache-Control": "max-age=86400"
-    },
-    "/*.css": {
-      "Content-Type": "text/css; charset=utf-8",
-      "Cache-Control": "max-age=86400"
-    }
-  },
-  "redirects": [
-    {
-      "source": "/index",
-      "destination": "/index.html",
-      "type": 301
-    }
   ]
 }
