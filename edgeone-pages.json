@@ -1,0 +1,30 @@
+{
+  "name": "birthday-wishes",
+  "version": "1.0.0",
+  "description": "生日祝福网站 - 支持用户系统和点赞功能",
+  "runtime": "static",
+  "build": {
+    "command": "echo 'Static site, no build needed'",
+    "output": "."
+  },
+  "headers": {
+    "/*.html": {
+      "Cache-Control": "no-cache"
+    },
+    "/*.js": {
+      "Content-Type": "application/javascript; charset=utf-8",
+      "Cache-Control": "max-age=86400"
+    },
+    "/*.css": {
+      "Content-Type": "text/css; charset=utf-8",
+      "Cache-Control": "max-age=86400"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/index",
+      "destination": "/index.html",
+      "type": 301
+    }
+  ]
+}
