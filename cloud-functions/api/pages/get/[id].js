@@ -2,12 +2,14 @@
  * 获取生日祝福页面详情
  * GET /api/pages/get/[id]
  */
-export function onRequestGet(context) {
+export async function onRequestGet(context) {
     const { params, env } = context;
     const pageId = params.id;
     
-    // 从 KV 获取页面数据
-    return env.birthday_kv.get(`page:${pageId}`).then(pageData => {
+    try {
+        // 从 KV 获取页面数据
+        const pageData = await env.birthday_kv.get(`page:${pageId}`);
+        
         if (!pageData) {
             return new Response(JSON.stringify({
                 success: false,
@@ -37,23 +39,23 @@ export function onRequestGet(context) {
         
         // 增加浏览次数
         page.views = (page.views || 0) + 1;
-        return env.birthday_kv.put(`page:${pageId}`, JSON.stringify(page)).then(() => {
-            // 获取点赞数
-            return env.birthday_kv.get(`likes:${pageId}`).then(likesData => {
-                const likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
-                
-                return new Response(JSON.stringify({
-                    success: true,
-                    page: {
-                        ...page,
-                        likes: likes.count || 0
-                    }
-                }), {
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            });
-        });
-    }).catch(error => {
+        await env.birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+        
+        // 获取点赞数
+        const likesData = await env.birthday_kv.get(`likes:${pageId}`);
+        const likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
+        
+        return new Response(JSON.stringify({
+            success: true,
+            page: {
+                ...page,
+                likes: likes.count || 0
+            }
+        }), {
+            headers: { 'Content-Type': 'application/json' }
+        };
+        
+    } catch (error) {
         return new Response(JSON.stringify({
             success: false,
             message: '服务器错误：' + error.message
@@ -61,5 +63,5 @@ export function onRequestGet(context) {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         };
-    });
+    }
 }

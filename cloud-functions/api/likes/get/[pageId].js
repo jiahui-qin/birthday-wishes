@@ -2,12 +2,13 @@
  * 获取页面点赞数
  * GET /api/likes/get/[pageId]
  */
-export function onRequestGet(context) {
+export async function onRequestGet(context) {
     const { params, env } = context;
     const pageId = params.pageId;
     
-    // 检查页面是否存在
-    return env.birthday_kv.get(`page:${pageId}`).then(pageData => {
+    try {
+        // 检查页面是否存在
+        const pageData = await env.birthday_kv.get(`page:${pageId}`);
         if (!pageData) {
             return new Response(JSON.stringify({
                 success: false,
@@ -19,17 +20,17 @@ export function onRequestGet(context) {
         }
         
         // 获取点赞数据
-        return env.birthday_kv.get(`likes:${pageId}`).then(likesData => {
-            const likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
-            
-            return new Response(JSON.stringify({
-                success: true,
-                likes: likes.count || 0
-            }), {
-                headers: { 'Content-Type': 'application/json' }
-            };
-        });
-    }).catch(error => {
+        const likesData = await env.birthday_kv.get(`likes:${pageId}`);
+        const likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
+        
+        return new Response(JSON.stringify({
+            success: true,
+            likes: likes.count || 0
+        }), {
+            headers: { 'Content-Type': 'application/json' }
+        };
+        
+    } catch (error) {
         return new Response(JSON.stringify({
             success: false,
             message: '服务器错误：' + error.message
@@ -37,5 +38,5 @@ export function onRequestGet(context) {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         };
-    });
+    }
 }

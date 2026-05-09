@@ -2,10 +2,11 @@
  * 点赞/+1 API
  * POST /api/likes/add
  */
-export function onRequestPost(context) {
+export async function onRequestPost(context) {
     const { request, env } = context;
     
-    return request.json().then(body => {
+    try {
+        const body = await request.json();
         const { pageId, userIdentifier } = body;
         
         // 验证输入
@@ -20,48 +21,40 @@ export function onRequestPost(context) {
         }
         
         // 检查页面是否存在
-        return env.birthday_kv.get(`page:${pageId}`).then(pageData => {
-            if (!pageData) {
-                return new Response(JSON.stringify({
-                    success: false,
-                    message: '页面不存在'
-                }), {
-                    status: 404,
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            }
+        const pageData = await env.birthday_kv.get(`page:${pageId}`);
+        if (!pageData) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: '页面不存在'
+            }), {
+                status: 404,
+                headers: { 'Content-Type': 'application/json' }
+            };
+        }
+        
+        // 获取当前点赞数据
+        const likesData = await env.birthday_kv.get(`likes:${pageId}`);
+        let likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
+        
+        // 使用 userIdentifier 防止重复点赞
+        const identifier = userIdentifier || 'anonymous_' + Date.now();
+        
+        if (!likes.users.includes(identifier)) {
+            likes.count += 1;
+            likes.users.push(identifier);
             
-            // 获取当前点赞数据
-            return env.birthday_kv.get(`likes:${pageId}`).then(likesData => {
-                let likes = likesData ? JSON.parse(likesData) : { count: 0, users: [] };
-                
-                // 使用 userIdentifier 防止重复点赞
-                const identifier = userIdentifier || 'anonymous_' + Date.now();
-                
-                if (!likes.users.includes(identifier)) {
-                    likes.count += 1;
-                    likes.users.push(identifier);
-                    
-                    // 保存回 KV
-                    return env.birthday_kv.put(`likes:${pageId}`, JSON.stringify(likes)).then(() => {
-                        return new Response(JSON.stringify({
-                            success: true,
-                            likes: likes.count
-                        }), {
-                            headers: { 'Content-Type': 'application/json' }
-                        };
-                    });
-                }
-                
-                return new Response(JSON.stringify({
-                    success: true,
-                    likes: likes.count
-                }), {
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            });
-        });
-    }).catch(error => {
+            // 保存回 KV
+            await env.birthday_kv.put(`likes:${pageId}`, JSON.stringify(likes));
+        }
+        
+        return new Response(JSON.stringify({
+            success: true,
+            likes: likes.count
+        }), {
+            headers: { 'Content-Type': 'application/json' }
+        };
+        
+    } catch (error) {
         return new Response(JSON.stringify({
             success: false,
             message: '服务器错误：' + error.message
@@ -69,5 +62,5 @@ export function onRequestPost(context) {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         };
-    });
+    }
 }

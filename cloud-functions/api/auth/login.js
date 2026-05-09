@@ -2,10 +2,11 @@
  * 用户登录 API
  * POST /api/auth/login
  */
-export function onRequestPost(context) {
+export async function onRequestPost(context) {
     const { request, env } = context;
     
-    return request.json().then(body => {
+    try {
+        const body = await request.json();
         const { username, password } = body;
         
         // 验证输入
@@ -20,48 +21,47 @@ export function onRequestPost(context) {
         }
         
         // 获取用户
-        return env.birthday_kv.get(`user:${username}`).then(userData => {
-            if (!userData) {
-                return new Response(JSON.stringify({
-                    success: false,
-                    message: '用户名或密码错误'
-                }), {
-                    status: 401,
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            }
-            
-            const user = JSON.parse(userData);
-            
-            // 验证密码
-            return hashPassword(password).then(passwordHash => {
-                if (passwordHash !== user.password) {
-                    return new Response(JSON.stringify({
-                        success: false,
-                        message: '用户名或密码错误'
-                    }), {
-                        status: 401,
-                        headers: { 'Content-Type': 'application/json' }
-                    };
-                }
-                
-                // 生成 token
-                const token = btoa(JSON.stringify({
-                    username,
-                    exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天过期
-                }));
-                
-                return new Response(JSON.stringify({
-                    success: true,
-                    message: '登录成功',
-                    token,
-                    username
-                }), {
-                    headers: { 'Content-Type': 'application/json' }
-                };
-            });
-        });
-    }).catch(error => {
+        const userData = await env.birthday_kv.get(`user:${username}`);
+        if (!userData) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: '用户名或密码错误'
+            }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' }
+            };
+        }
+        
+        const user = JSON.parse(userData);
+        
+        // 验证密码
+        const passwordHash = await hashPassword(password);
+        if (passwordHash !== user.password) {
+            return new Response(JSON.stringify({
+                success: false,
+                message: '用户名或密码错误'
+            }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' }
+            };
+        }
+        
+        // 生成 token
+        const token = btoa(JSON.stringify({
+            username,
+            exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天过期
+        }));
+        
+        return new Response(JSON.stringify({
+            success: true,
+            message: '登录成功',
+            token,
+            username
+        }), {
+            headers: { 'Content-Type': 'application/json' }
+        };
+        
+    } catch (error) {
         return new Response(JSON.stringify({
             success: false,
             message: '服务器错误：' + error.message
@@ -69,7 +69,7 @@ export function onRequestPost(context) {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         };
-    });
+    }
 }
 
 // 密码哈希函数
