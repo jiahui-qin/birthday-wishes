@@ -2,7 +2,6 @@
   "name": "birthday-wishes-website",
   "version": "1.0.0",
   "description": "生日祝福网站 - 支持用户系统、贺卡管理、点赞功能",
-  "main": "index.html",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
