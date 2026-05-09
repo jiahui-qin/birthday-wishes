@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Happy Birthday - 极简清新</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 60px 40px;
+            max-width: 900px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .minimal-line {
+            width: 60px;
+            height: 3px;
+            background: #1f2937;
+            margin: 0 auto 40px;
+            animation: expandLine 1s ease 0.5s both;
+        }
+
+        @keyframes expandLine {
+            from {
+                width: 0;
+            }
+            to {
+                width: 60px;
+            }
+        }
+
+        .emoji-main {
+            font-size: 80px;
+            margin-bottom: 40px;
+            animation: rotateIn 1s ease;
+        }
+
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-180deg) scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0) scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: 40px;
+            color: #1f2937;
+        }
+
+        .recipient-name {
+            font-size: 36px;
+            font-weight: 600;
+            margin: 40px 0;
+            color: #4b5563;
+        }
+
+        .message {
+            font-size: 20px;
+            line-height: 2;
+            color: #6b7280;
+            margin: 50px auto;
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        .divider {
+            width: 100px;
+            height: 1px;
+            background: #e5e7eb;
+            margin: 50px auto;
+        }
+
+        .sender {
+            font-size: 18px;
+            color: #9ca3af;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .geometric-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border: 2px solid #e5e7eb;
+            animation: shapeFloat 20s linear infinite;
+        }
+
+        @keyframes shapeFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+
+        .date {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #d1d5db;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 42px;
+                letter-spacing: 4px;
+            }
+
+            .recipient-name {
+                font-size: 28px;
+            }
+
+            .message {
+                font-size: 16px;
+            }
+
+            .emoji-main {
+                font-size: 60px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="geometric-shapes" id="shapes"></div>
+    
+    <div class="container">
+        <div class="emoji-main">🎁</div>
+        <div class="minimal-line"></div>
+        <h1>Happy Birthday</h1>
+        <div class="recipient-name" id="recipientName">简约之美</div>
+        <div class="message" id="birthdayMessage">祝你生日快乐，愿你的每一天都充满阳光与欢笑！</div>
+        <div class="divider"></div>
+        <div class="sender" id="senderName">— 你的朋友</div>
+        <div class="date" id="date"></div>
+    </div>
+
+    <script>
+        const data = JSON.parse(localStorage.getItem('birthdayData') || '{}');
+        document.getElementById('recipientName').textContent = data.recipientName || '简约之美';
+        document.getElementById('birthdayMessage').textContent = data.message || '祝你生日快乐！';
+        document.getElementById('senderName').textContent = '— ' + (data.senderName || '你的朋友');
+        document.getElementById('date').textContent = data.date || new Date().toLocaleDateString('zh-CN');
+
+        // 创建几何图形
+        const shapes = document.getElementById('shapes');
+        const shapes_array = [
+            { type: 'circle', size: 50 },
+            { type: 'square', size: 40 },
+            { type: 'circle', size: 30 },
+            { type: 'square', size: 60 }
+        ];
+
+        for (let i = 0; i < 10; i++) {
+            const shape = document.createElement('div');
+            shape.className = 'shape';
+            
+            const shapeData = shapes_array[Math.floor(Math.random() * shapes_array.length)];
+            const size = shapeData.size + Math.random() * 30;
+            
+            shape.style.width = size + 'px';
+            shape.style.height = size + 'px';
+            shape.style.left = Math.random() * 100 + '%';
+            shape.style.animationDelay = Math.random() * 20 + 's';
+            shape.style.animationDuration = (15 + Math.random() * 10) + 's';
+            
+            if (shapeData.type === 'circle') {
+                shape.style.borderRadius = '50%';
+            }
+            
+            shapes.appendChild(shape);
+        }
+    </script>
+</body>
+</html>

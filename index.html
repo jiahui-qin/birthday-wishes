@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 生日祝福网站 - 选择模板</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Nunito:wght@400;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">🎂 生日祝福生成器</div>
+            <div class="nav-links">
+                <a href="#templates" class="nav-link">选择模板</a>
+                <a href="#customize" class="nav-link">自定义</a>
+                <a href="dashboard.html" class="nav-link" id="dashboardLink" style="display:none;">我的贺卡</a>
+                <div class="auth-buttons" id="authButtons">
+                    <button class="btn-login" onclick="showLoginModal()">登录</button>
+                    <button class="btn-register" onclick="showRegisterModal()">注册</button>
+                </div>
+                <div class="user-info" id="userInfo" style="display:none;">
+                    <span class="username" id="usernameDisplay"></span>
+                    <button class="btn-logout" onclick="logout()">退出</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主横幅 -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">🎉 创建专属生日祝福</h1>
+            <p class="hero-subtitle">选择精美模板，为特别的人送上独特祝福</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">精美模板</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">✨</span>
+                    <span class="stat-label">用户系统</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">👍</span>
+                    <span class="stat-label">点赞功能</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-particles" id="heroParticles"></div>
+    </header>
+
+    <!-- 模板选择区 -->
+    <section id="templates" class="templates-section">
+        <div class="container">
+            <h2 class="section-title">🎨 选择祝福模板</h2>
+            <p class="section-subtitle">点击预览，选择最适合的生日祝福风格</p>
+            
+            <div class="templates-grid">
+                <!-- 模板1: 优雅奢华 -->
+                <div class="template-card" data-template="elegant">
+                    <div class="template-preview elegant-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">🎂</div>
+                            <div class="preview-text">Happy Birthday</div>
+                            <div class="preview-name">亲爱的朋友</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>✨ 优雅奢华</h3>
+                        <p>深色背景 + 金色装饰，适合正式场合</p>
+                        <div class="template-tags">
+                            <span class="tag">优雅</span>
+                            <span class="tag">正式</span>
+                            <span class="tag">奢华</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('elegant')">使用此模板</button>
+                    </div>
+                </div>
+
+                <!-- 模板2: 活泼派对 -->
+                <div class="template-card" data-template="playful">
+                    <div class="template-preview playful-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">🎈</div>
+                            <div class="preview-text">Happy Birthday!</div>
+                            <div class="preview-name">🎉 派对时间 🎉</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>🎈 活泼派对</h3>
+                        <p>彩色气球 + 欢乐氛围，适合朋友聚会</p>
+                        <div class="template-tags">
+                            <span class="tag">活泼</span>
+                            <span class="tag">欢乐</span>
+                            <span class="tag">彩色</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('playful')">使用此模板</button>
+                    </div>
+                </div>
+
+                <!-- 模板3: 极简清新 -->
+                <div class="template-card" data-template="minimalist">
+                    <div class="template-preview minimalist-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">🎁</div>
+                            <div class="preview-text">Happy Birthday</div>
+                            <div class="preview-name">简约之美</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>🎁 极简清新</h3>
+                        <p>纯白背景 + 简约设计，适合文艺风格</p>
+                        <div class="template-tags">
+                            <span class="tag">极简</span>
+                            <span class="tag">清新</span>
+                            <span class="tag">文艺</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('minimalist')">使用此模板</button>
+                    </div>
+                </div>
+
+                <!-- 模板4: 花卉浪漫 -->
+                <div class="template-card" data-template="floral">
+                    <div class="template-preview floral-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">🌸</div>
+                            <div class="preview-text">Happy Birthday</div>
+                            <div class="preview-name">花开花落</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>🌸 花卉浪漫</h3>
+                        <p>粉色花朵 + 浪漫氛围，适合送女性好友</p>
+                        <div class="template-tags">
+                            <span class="tag">浪漫</span>
+                            <span class="tag">花卉</span>
+                            <span class="tag">温柔</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('floral')">使用此模板</button>
+                    </div>
+                </div>
+
+                <!-- 模板5: 宇宙星空 -->
+                <div class="template-card" data-template="cosmic">
+                    <div class="template-preview cosmic-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">🌌</div>
+                            <div class="preview-text">Happy Birthday</div>
+                            <div class="preview-name">星辰大海</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>🌌 宇宙星空</h3>
+                        <p>深空背景 + 闪烁星辰，适合梦幻风格</p>
+                        <div class="template-tags">
+                            <span class="tag">宇宙</span>
+                            <span class="tag">梦幻</span>
+                            <span class="tag">星空</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('cosmic')">使用此模板</button>
+                    </div>
+                </div>
+
+                <!-- 模板6: 复古温暖 -->
+                <div class="template-card" data-template="vintage">
+                    <div class="template-preview vintage-preview">
+                        <div class="preview-content">
+                            <div class="preview-emoji">📻</div>
+                            <div class="preview-text">Happy Birthday</div>
+                            <div class="preview-name">怀旧时光</div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>📻 复古温暖</h3>
+                        <p>复古色调 + 温暖氛围，适合长辈或怀旧风格</p>
+                        <div class="template-tags">
+                            <span class="tag">复古</span>
+                            <span class="tag">温暖</span>
+                            <span class="tag">怀旧</span>
+                        </div>
+                        <button class="btn-select" onclick="selectTemplate('vintage')">使用此模板</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 自定义表单 -->
+    <section id="customize" class="customize-section">
+        <div class="container">
+            <h2 class="section-title">✏️ 自定义祝福内容</h2>
+            <p class="section-subtitle">填写信息，生成专属生日祝福页面</p>
+            
+            <form id="birthdayForm" class="customize-form">
+                <div class="form-group">
+                    <label for="recipientName">寿星姓名</label>
+                    <input type="text" id="recipientName" placeholder="输入寿星的名字" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthdayMessage">祝福语</label>
+                    <textarea id="birthdayMessage" placeholder="输入你的祝福语..." rows="4" required>祝你生日快乐，愿你的每一天都充满阳光与欢笑！🎂🎉</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="senderName">你的名字</label>
+                    <input type="text" id="senderName" placeholder="输入你的名字" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="selectedTemplate">已选模板</label>
+                    <input type="text" id="selectedTemplate" readonly placeholder="请先从上方选择模板">
+                </div>
+
+                <div class="form-group">
+                    <label for="expirationDays">贺卡有效期（天，0为永不过期）</label>
+                    <input type="number" id="expirationDays" placeholder="输入天数，0或留空为永不过期" min="0" value="0">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-generate">🎂 生成祝福页面</button>
+                    <button type="button" class="btn-preview" onclick="previewPage()">👀 预览效果</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>🎂 生日祝福网站生成器 | 用心传递每一份祝福</p>
+            <p class="footer-note">6 个精美模板 + 用户系统 + 点赞功能</p>
+        </div>
+    </footer>
+
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content auth-modal">
+            <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+            <h2>登录</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">登录</button>
+                <p class="auth-switch">还没有账号？<a href="javascript:void(0)" onclick="switchToRegister()">立即注册</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content auth-modal">
+            <span class="modal-close" onclick="closeRegisterModal()">&times;</span>
+            <h2>注册</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">用户名</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">密码（至少6位）</label>
+                    <input type="password" id="registerPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">注册</button>
+                <p class="auth-switch">已有账号？<a href="javascript:void(0)" onclick="switchToLogin()">立即登录</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 模态框：预览 -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <iframe id="previewFrame" class="modal-iframe"></iframe>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

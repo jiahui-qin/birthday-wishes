@@ -1,0 +1,164 @@
+/* ========================================
+   认证相关样式
+   ======================================== */
+
+/* 认证按钮 */
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-login,
+.btn-register {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-login {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-login:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-register {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-register:hover {
+    background: var(--primary-dark);
+}
+
+/* 用户信息 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.username {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.btn-logout {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--text-light);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+/* 认证模态框 */
+.auth-modal {
+    max-width: 450px;
+    padding: 48px 40px;
+}
+
+.auth-modal h2 {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--text-dark);
+}
+
+.auth-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-modal .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.auth-modal .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.auth-modal .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.btn-submit:hover {
+    background: var(--primary-dark);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .auth-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .auth-modal {
+        padding: 32px 24px;
+        margin: 20px;
+    }
+}

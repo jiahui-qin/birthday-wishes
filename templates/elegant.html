@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Happy Birthday - 优雅奢华</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+            color: #fbbf24;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 1.5s ease;
+            max-width: 900px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity:0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity:1;
+                transform: translateY(0);
+            }
+        }
+
+        .golden-border {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .emoji-main {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        h1 {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+            letter-spacing: 4px;
+        }
+
+        .recipient-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 56px;
+            margin: 30px 0;
+            color: #fef3c7;
+            text-shadow: 0 0 20px rgba(254, 243, 199, 0.5);
+        }
+
+        .message {
+            font-size: 24px;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 40px auto;
+            color: #fde68a;
+            font-style: italic;
+            padding: 0 20px;
+        }
+
+        .sender {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            margin-top: 60px;
+            color: #fbbf24;
+        }
+
+        .decorations {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top:0;
+            left:0;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity:0;
+                transform: scale(0);
+            }
+            50% {
+                opacity:1;
+                transform: scale(1);
+            }
+        }
+
+        .date {
+            margin-top: 40px;
+            font-size: 18px;
+            color: rgba(251, 191, 36, 0.7);
+            letter-spacing: 2px;
+        }
+
+        /* 点赞区域 */
+        .likes-section {
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .likes-button {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+            padding: 16px 32px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Playfair Display', serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .likes-button:hover {
+            background: rgba(251, 191, 36, 0.4);
+            transform: scale(1.05);
+        }
+
+        .likes-button:active {
+            transform: scale(0.95);
+        }
+
+        .likes-button.liked {
+            background: #fbbf24;
+            color: #1e1b4b;
+        }
+
+        .likes-count {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .likes-label {
+            font-size: 16px;
+        }
+
+        .stats {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(251, 191, 36, 0.7);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 48px;
+            }
+
+            .recipient-name {
+                font-size: 40px;
+            }
+
+            .message {
+                font-size: 18px;
+            }
+
+            .emoji-main {
+                font-size: 72px;
+            }
+
+            .likes-button {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decorations" id="decorations"></div>
+    <div class="golden-border"></div>
+    
+    <div class="container">
+        <div class="emoji-main">🎂</div>
+        <h1>Happy Birthday</h1>
+        <div class="recipient-name" id="recipientName">亲爱的朋友</div>
+        <div class="message" id="birthdayMessage">祝你生日快乐，愿你的每一天都充满阳光与欢笑！</div>
+        <div class="sender" id="senderName">— 你的朋友</div>
+        <div class="date" id="date"></div>
+
+        <!-- 点赞区域 -->
+        <div class="likes-section">
+            <button class="likes-button" id="likesButton" onclick="addLike()">
+                <span class="likes-label">👍 为TA点赞</span>
+                <span class="likes-count" id="likesCount">0</span>
+            </button>
+            <div class="stats">
+                <span id="viewsCount">0</span> 次浏览 · <span id="likesCountText">0</span> 个点赞
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        // 获取页面 ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageId = urlParams.get('id');
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (pageId) {
+                await loadPageData();
+                await loadLikes();
+            } else {
+                // 从 localStorage 加载（预览模式）
+                loadPreviewData();
+            }
+            initializeDecorations();
+        });
+
+        /**
+         * 加载页面数据
+         */
+        async function loadPageData() {
+            const result = await window.birthdayAPI.getPage(pageId);
+            
+            if (result.success) {
+                const page = result.page;
+                document.getElementById('recipientName').textContent = page.recipientName;
+                document.getElementById('birthdayMessage').textContent = page.message;
+                document.getElementById('senderName').textContent = '— ' + page.senderName;
+                document.getElementById('date').textContent = new Date(page.createdAt).toLocaleDateString('zh-CN');
+                document.getElementById('viewsCount').textContent = page.views || 0;
+            } else {
+                if (result.expired) {
+                    alert('该祝福页面已过期');
+                } else {
+                    alert('加载失败：' + result.message);
+                }
+            }
+        }
+
+        /**
+         * 加载预览数据
+         */
+        function loadPreviewData() {
+            const data = JSON.parse(localStorage.getItem('birthdayData') || '{}');
+            document.getElementById('recipientName').textContent = data.recipientName || '亲爱的朋友';
+            document.getElementById('birthdayMessage').textContent = data.message || '祝你生日快乐！';
+            document.getElementById('senderName').textContent = '— ' + (data.senderName || '你的朋友');
+            document.getElementById('date').textContent = data.date || new Date().toLocaleDateString('zh-CN');
+        }
+
+        /**
+         * 加载点赞数
+         */
+        async function loadLikes() {
+            const result = await window.birthdayAPI.getLikes(pageId);
+            if (result.success) {
+                document.getElementById('likesCount').textContent = result.likes;
+                document.getElementById('likesCountText').textContent = result.likes;
+            }
+        }
+
+        /**
+         * 点赞功能
+         */
+        async function addLike() {
+            if (!pageId) {
+                alert('预览模式下无法点赞');
+                return;
+            }
+
+            const button = document.getElementById('likesButton');
+            
+            // 防止重复点赞（简化版，实际应该用更严格的机制）
+            if (button.classList.contains('liked')) {
+                alert('你已经点过赞了！');
+                return;
+            }
+
+            const result = await window.birthdayAPI.addLike(pageId);
+            
+            if (result.success) {
+                document.getElementById('likesCount').textContent = result.likes;
+                document.getElementById('likesCountText').textContent = result.likes;
+                button.classList.add('liked');
+                button.innerHTML = '<span class="likes-label">👍 已点赞</span><span class="likes-count">' + result.likes + '</span>';
+            } else {
+                alert('点赞失败：' + result.message);
+            }
+        }
+
+        /**
+         * 初始化装饰效果
+         */
+        function initializeDecorations() {
+            const decorations = document.getElementById('decorations');
+            for (let i = 0; i < 50; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkle.style.animationDuration = (1 + Math.random() * 2) + 's';
+                decorations.appendChild(sparkle);
+            }
+        }
+    </script>
+</body>
+</html>
