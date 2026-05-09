@@ -1,14 +1,23 @@
 /**
- * 用户注册 API
+ * 用户注册 API - EdgeOne Pages Functions 格式
  * POST /api/auth/register
  */
-export async function onRequestPost(context) {
-    const { request, env } = context;
-    
+export default async function (request, env) {
+    // 只处理 POST 请求
+    if (request.method !== 'POST') {
+        return new Response(JSON.stringify({
+            success: false,
+            message: '只支持 POST 请求'
+        }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
+
     try {
         const body = await request.json();
         const { username, password } = body;
-        
+
         // 验证输入
         if (!username || !password) {
             return new Response(JSON.stringify({
@@ -19,7 +28,7 @@ export async function onRequestPost(context) {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
-        
+
         if (password.length < 6) {
             return new Response(JSON.stringify({
                 success: false,
@@ -29,7 +38,7 @@ export async function onRequestPost(context) {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
-        
+
         // 检查用户是否已存在
         const existingUser = await env.birthday_kv.get(`user:${username}`);
         if (existingUser) {
@@ -41,10 +50,10 @@ export async function onRequestPost(context) {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
-        
+
         // 简单密码哈希（生产环境应使用 bcrypt）
         const passwordHash = await hashPassword(password);
-        
+
         // 创建用户
         const user = {
             username,
@@ -52,15 +61,15 @@ export async function onRequestPost(context) {
             createdAt: new Date().toISOString(),
             cards: []
         };
-        
+
         await env.birthday_kv.put(`user:${username}`, JSON.stringify(user));
-        
+
         // 生成 token（简化版本，生产环境应使用 JWT）
         const token = btoa(JSON.stringify({
             username,
             exp: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天过期
         }));
-        
+
         return new Response(JSON.stringify({
             success: true,
             message: '注册成功',
@@ -69,7 +78,7 @@ export async function onRequestPost(context) {
         }), {
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
     } catch (error) {
         return new Response(JSON.stringify({
             success: false,
@@ -89,10 +98,4 @@ async function hashPassword(password) {
     return Array.from(new Uint8Array(hash))
         .map(b => b.toString(16).padStart(2, '0'))
         .join('');
-}
-
-// 验证密码
-async function verifyPassword(password, hash) {
-    const hashedInput = await hashPassword(password);
-    return hashedInput === hash;
 }
