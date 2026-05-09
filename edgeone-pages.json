@@ -1,18 +1,5 @@
 {
   "name": "birthday-wishes",
   "version": "1.0.0",
-  "description": "生日祝福网站 - 支持用户系统和点赞功能",
-  "build": {
-    "command": "echo 'Static site, no build needed'",
-    "output": "."
-  },
-  "static": {
-    "upload": ["*.html", "css/**", "js/**", "templates/**", "images/**"]
-  },
-  "kv_namespaces": [
-    {
-      "binding": "birthday_kv",
-      "id": "ns-2Sd3gvhekE9z"
-    }
-  ]
+  "description": "生日祝福网站"
 }
