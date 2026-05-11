@@ -59,8 +59,8 @@ export async function onRequestPost(context) {
     }
     
     const body = await request.json();
-    const { title, message, theme, musicUrl } = body;
-    
+    const { title, message, theme, musicUrl, senderName, expirationDays } = body;
+
     // 验证输入
     if (!title || !message) {
       return new Response(JSON.stringify({
@@ -71,18 +71,26 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    
+
     // 生成页面 ID
     const pageId = 'page_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
+
+    // 计算过期时间
+    let expirationDate = null;
+    if (expirationDays && parseInt(expirationDays) > 0) {
+      expirationDate = new Date(Date.now() + parseInt(expirationDays) * 24 * 60 * 60 * 1000).toISOString();
+    }
+
     // 创建页面数据
     const pageData = {
       id: pageId,
       username,
       title,
       message,
+      senderName: senderName || '',
       theme: theme || 'classic',
       musicUrl: musicUrl || '',
+      expirationDate,
       createdAt: new Date().toISOString(),
       views: 0,
       likes: 0

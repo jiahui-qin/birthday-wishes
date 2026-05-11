@@ -124,17 +124,17 @@ async function generateBirthdayPage() {
     
     // 调用 API 创建页面
     const result = await window.birthdayAPI.createPage({
-        recipientName,
+        title: recipientName,
         message: birthdayMessage,
-        senderName,
-        template: currentTemplate,
+        theme: currentTemplate,
         expirationDays: expirationDays ? parseInt(expirationDays) : 0
     });
     
     if (result.success) {
         alert('✅ 贺卡创建成功！');
-        // 打开生成的页面
-        window.open(result.url, '_blank');
+        // 构造页面 URL 并打开
+        const pageUrl = `${window.location.origin}/page.html?id=${result.pageId}`;
+        window.open(pageUrl, '_blank');
     } else {
         alert('❌ 创建失败：' + result.message);
     }
