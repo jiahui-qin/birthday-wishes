@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
     console.log('Adding like for page:', pageId);
     
     // 检查页面是否存在
-    const pageData = await birthday_kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page_${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -50,7 +50,7 @@ export async function onRequestPost(context) {
     
     // 检查是否已点赞（通过 userIdentifier 防止重复点赞）
     if (userIdentifier) {
-      const likeKey = `like:${pageId}:${userIdentifier}`;
+      const likeKey = `like_${pageId}_${userIdentifier}`;
       const existingLike = await birthday_kv.get(likeKey);
       if (existingLike) {
         return new Response(JSON.stringify({
@@ -66,14 +66,14 @@ export async function onRequestPost(context) {
     }
     
     // 增加点赞数
-    const likesData = await birthday_kv.get(`likes:${pageId}`);
+    const likesData = await birthday_kv.get(`likes_${pageId}`);
     const likes = likesData ? parseInt(likesData) + 1 : 1;
-    await birthday_kv.put(`likes:${pageId}`, likes.toString());
+    await birthday_kv.put(`likes_${pageId}`, likes.toString());
     
     // 更新页面数据
     const page = JSON.parse(pageData);
     page.likes = likes;
-    await birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+    await birthday_kv.put(`page_${pageId}`, JSON.stringify(page));
     
     console.log('=== Add Like API Success ===');
     

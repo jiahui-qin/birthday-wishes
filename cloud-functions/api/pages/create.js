@@ -91,14 +91,14 @@ export async function onRequestPost(context) {
     console.log('Saving page to KV:', pageId);
     
     // 保存到 KV
-    await birthday_kv.put(`page:${pageId}`, JSON.stringify(pageData));
+    await birthday_kv.put(`page_${pageId}`, JSON.stringify(pageData));
     
     // 更新用户的页面列表
-    const userData = await birthday_kv.get(`user:${username}`);
+    const userData = await birthday_kv.get(`user_${username}`);
     const user = JSON.parse(userData);
     if (!user.cards) user.cards = [];
     user.cards.push(pageId);
-    await birthday_kv.put(`user:${username}`, JSON.stringify(user));
+    await birthday_kv.put(`user_${username}`, JSON.stringify(user));
     
     console.log('=== Create Page API Success ===');
     

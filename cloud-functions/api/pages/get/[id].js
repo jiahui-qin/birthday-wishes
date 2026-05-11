@@ -21,10 +21,10 @@ export async function onRequestGet(context) {
       });
     }
     
-    console.log('Getting page from KV:', `page:${pageId}`);
+    console.log('Getting page from KV:', `page_${pageId}`);
     
     // 获取页面数据
-    const pageData = await birthday_kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page_${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -39,7 +39,7 @@ export async function onRequestGet(context) {
     
     // 增加浏览次数
     page.views = (page.views || 0) + 1;
-    await birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+    await birthday_kv.put(`page_${pageId}`, JSON.stringify(page));
     
     console.log('=== Get Page API Success ===');
     

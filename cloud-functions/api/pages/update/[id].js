@@ -62,7 +62,7 @@ export async function onRequestPut(context) {
     console.log('Updating page:', pageId);
     
     // 获取页面数据
-    const pageData = await birthday_kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page_${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -95,7 +95,7 @@ export async function onRequestPut(context) {
     if (theme) page.theme = theme;
     if (musicUrl !== undefined) page.musicUrl = musicUrl;
     
-    await birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+    await birthday_kv.put(`page_${pageId}`, JSON.stringify(page));
     
     console.log('=== Update Page API Success ===');
     

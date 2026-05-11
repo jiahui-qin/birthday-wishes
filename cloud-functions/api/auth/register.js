@@ -53,7 +53,7 @@ export async function onRequestPost(context) {
     // 检查用户是否已存在
     let existingUser;
     try {
-      existingUser = await birthday_kv.get(`user:${username}`);
+      existingUser = await birthday_kv.get(`user_${username}`);
       console.log('Existing user:', existingUser);
     } catch (kvError) {
       console.error('KV get error:', kvError);
@@ -95,7 +95,7 @@ export async function onRequestPost(context) {
     
     // 保存到 KV
     try {
-      await birthday_kv.put(`user:${username}`, JSON.stringify(user));
+      await birthday_kv.put(`user_${username}`, JSON.stringify(user));
       console.log('User saved successfully');
     } catch (kvError) {
       console.error('KV put error:', kvError);

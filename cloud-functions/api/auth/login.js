@@ -38,8 +38,8 @@ export async function onRequestPost(context) {
     }
     
     // 获取用户
-    console.log('Getting user from KV:', `user:${username}`);
-    const userData = await birthday_kv.get(`user:${username}`);
+    console.log('Getting user from KV:', `user_${username}`);
+    const userData = await birthday_kv.get(`user_${username}`);
     console.log('User data:', userData);
     
     if (!userData) {

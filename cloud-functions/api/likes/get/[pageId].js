@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
     console.log('Getting likes for page:', pageId);
     
     // 获取点赞数
-    const likesData = await birthday_kv.get(`likes:${pageId}`);
+    const likesData = await birthday_kv.get(`likes_${pageId}`);
     const likes = likesData ? parseInt(likesData) : 0;
     
     console.log('=== Get Likes API Success ===');

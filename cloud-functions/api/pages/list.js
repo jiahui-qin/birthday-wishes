@@ -35,8 +35,8 @@ export async function onRequestGet(context) {
     }
     
     // 获取用户数据
-    console.log('Getting user from KV:', `user:${username}`);
-    const userData = await birthday_kv.get(`user:${username}`);
+    console.log('Getting user from KV:', `user_${username}`);
+    const userData = await birthday_kv.get(`user_${username}`);
     if (!userData) {
       return new Response(JSON.stringify({
         success: false,
@@ -54,7 +54,7 @@ export async function onRequestGet(context) {
     console.log('Getting pages:', pageIds);
     const pages = [];
     for (const pageId of pageIds) {
-      const pageData = await birthday_kv.get(`page:${pageId}`);
+      const pageData = await birthday_kv.get(`page_${pageId}`);
       if (pageData) {
         pages.push(JSON.parse(pageData));
       }

@@ -62,7 +62,7 @@ export async function onRequestDelete(context) {
     console.log('Deleting page:', pageId);
     
     // 获取页面数据
-    const pageData = await birthday_kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page_${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -87,18 +87,18 @@ export async function onRequestDelete(context) {
     }
     
     // 删除页面
-    await birthday_kv.delete(`page:${pageId}`);
+    await birthday_kv.delete(`page_${pageId}`);
     
     // 删除相关点赞数据
-    await birthday_kv.delete(`likes:${pageId}`);
+    await birthday_kv.delete(`likes_${pageId}`);
     
     // 更新用户的页面列表
-    const userData = await birthday_kv.get(`user:${username}`);
+    const userData = await birthday_kv.get(`user_${username}`);
     if (userData) {
       const user = JSON.parse(userData);
       if (user.cards) {
         user.cards = user.cards.filter(id => id !== pageId);
-        await birthday_kv.put(`user:${username}`, JSON.stringify(user));
+        await birthday_kv.put(`user_${username}`, JSON.stringify(user));
       }
     }
     
