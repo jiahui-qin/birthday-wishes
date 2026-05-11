@@ -4,12 +4,14 @@
  */
 export async function onRequestPost(context) {
   console.log('=== Add Like API Start ===');
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    const kv = context.env.birthday_kv;
     const request = context.request;
     
-    if (!kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
+      console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
         message: '服务器配置错误：KV 存储未绑定'
@@ -35,7 +37,7 @@ export async function onRequestPost(context) {
     console.log('Adding like for page:', pageId);
     
     // 检查页面是否存在
-    const pageData = await kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page:${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -49,7 +51,7 @@ export async function onRequestPost(context) {
     // 检查是否已点赞（通过 userIdentifier 防止重复点赞）
     if (userIdentifier) {
       const likeKey = `like:${pageId}:${userIdentifier}`;
-      const existingLike = await kv.get(likeKey);
+      const existingLike = await birthday_kv.get(likeKey);
       if (existingLike) {
         return new Response(JSON.stringify({
           success: false,
@@ -60,18 +62,18 @@ export async function onRequestPost(context) {
         });
       }
       // 记录点赞
-      await kv.put(likeKey, 'true');
+      await birthday_kv.put(likeKey, 'true');
     }
     
     // 增加点赞数
-    const likesData = await kv.get(`likes:${pageId}`);
+    const likesData = await birthday_kv.get(`likes:${pageId}`);
     const likes = likesData ? parseInt(likesData) + 1 : 1;
-    await kv.put(`likes:${pageId}`, likes.toString());
+    await birthday_kv.put(`likes:${pageId}`, likes.toString());
     
     // 更新页面数据
     const page = JSON.parse(pageData);
     page.likes = likes;
-    await kv.put(`page:${pageId}`, JSON.stringify(page));
+    await birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
     
     console.log('=== Add Like API Success ===');
     

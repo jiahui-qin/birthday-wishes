@@ -5,31 +5,15 @@
 export async function onRequestPost(context) {
   // 调试日志
   console.log('=== Register API Start ===');
-  console.log('context.env:', context.env ? Object.keys(context.env) : 'undefined');
-  console.log('birthday_kv exists:', !!(context.env && context.env.birthday_kv));
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    // 检查 env 和 birthday_kv
-    if (!context.env) {
-      console.error('ERROR: context.env is undefined');
-      return new Response(JSON.stringify({
-        success: false,
-        message: '服务器配置错误：env 未定义'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    if (!context.env.birthday_kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
       console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
-        message: '服务器配置错误：KV 存储未绑定',
-        debug: { 
-          envKeys: Object.keys(context.env),
-          birthday_kv_exists: false 
-        }
+        message: '服务器配置错误：KV 存储未绑定'
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -37,7 +21,6 @@ export async function onRequestPost(context) {
     }
     
     const request = context.request;
-    const kv = context.env.birthday_kv;
     
     const body = await request.json();
     console.log('Request body:', JSON.stringify(body));
@@ -70,7 +53,7 @@ export async function onRequestPost(context) {
     // 检查用户是否已存在
     let existingUser;
     try {
-      existingUser = await kv.get(`user:${username}`);
+      existingUser = await birthday_kv.get(`user:${username}`);
       console.log('Existing user:', existingUser);
     } catch (kvError) {
       console.error('KV get error:', kvError);
@@ -112,7 +95,7 @@ export async function onRequestPost(context) {
     
     // 保存到 KV
     try {
-      await kv.put(`user:${username}`, JSON.stringify(user));
+      await birthday_kv.put(`user:${username}`, JSON.stringify(user));
       console.log('User saved successfully');
     } catch (kvError) {
       console.error('KV put error:', kvError);

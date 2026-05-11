@@ -4,12 +4,14 @@
  */
 export async function onRequestDelete(context) {
   console.log('=== Delete Page API Start ===');
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    const kv = context.env.birthday_kv;
     const request = context.request;
     
-    if (!kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
+      console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
         message: '服务器配置错误：KV 存储未绑定'
@@ -60,7 +62,7 @@ export async function onRequestDelete(context) {
     console.log('Deleting page:', pageId);
     
     // 获取页面数据
-    const pageData = await kv.get(`page:${pageId}`);
+    const pageData = await birthday_kv.get(`page:${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -85,18 +87,18 @@ export async function onRequestDelete(context) {
     }
     
     // 删除页面
-    await kv.delete(`page:${pageId}`);
+    await birthday_kv.delete(`page:${pageId}`);
     
     // 删除相关点赞数据
-    await kv.delete(`likes:${pageId}`);
+    await birthday_kv.delete(`likes:${pageId}`);
     
     // 更新用户的页面列表
-    const userData = await kv.get(`user:${username}`);
+    const userData = await birthday_kv.get(`user:${username}`);
     if (userData) {
       const user = JSON.parse(userData);
       if (user.cards) {
         user.cards = user.cards.filter(id => id !== pageId);
-        await kv.put(`user:${username}`, JSON.stringify(user));
+        await birthday_kv.put(`user:${username}`, JSON.stringify(user));
       }
     }
     

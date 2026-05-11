@@ -4,12 +4,14 @@
  */
 export async function onRequestGet(context) {
   console.log('=== Get Likes API Start ===');
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    const kv = context.env.birthday_kv;
     const pageId = context.params.pageId;
     
-    if (!kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
+      console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
         message: '服务器配置错误：KV 存储未绑定'
@@ -22,7 +24,7 @@ export async function onRequestGet(context) {
     console.log('Getting likes for page:', pageId);
     
     // 获取点赞数
-    const likesData = await kv.get(`likes:${pageId}`);
+    const likesData = await birthday_kv.get(`likes:${pageId}`);
     const likes = likesData ? parseInt(likesData) : 0;
     
     console.log('=== Get Likes API Success ===');

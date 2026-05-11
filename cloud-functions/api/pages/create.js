@@ -4,13 +4,14 @@
  */
 export async function onRequestPost(context) {
   console.log('=== Create Page API Start ===');
-  console.log('birthday_kv exists:', !!(context.env && context.env.birthday_kv));
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    const kv = context.env.birthday_kv;
     const request = context.request;
     
-    if (!kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
+      console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
         message: '服务器配置错误：KV 存储未绑定'
@@ -90,14 +91,14 @@ export async function onRequestPost(context) {
     console.log('Saving page to KV:', pageId);
     
     // 保存到 KV
-    await kv.put(`page:${pageId}`, JSON.stringify(pageData));
+    await birthday_kv.put(`page:${pageId}`, JSON.stringify(pageData));
     
     // 更新用户的页面列表
-    const userData = await kv.get(`user:${username}`);
+    const userData = await birthday_kv.get(`user:${username}`);
     const user = JSON.parse(userData);
     if (!user.cards) user.cards = [];
     user.cards.push(pageId);
-    await kv.put(`user:${username}`, JSON.stringify(user));
+    await birthday_kv.put(`user:${username}`, JSON.stringify(user));
     
     console.log('=== Create Page API Success ===');
     

@@ -4,12 +4,14 @@
  */
 export async function onRequestGet(context) {
   console.log('=== Pages List API Start ===');
+  console.log('birthday_kv exists:', typeof birthday_kv !== 'undefined');
   
   try {
-    const kv = context.env.birthday_kv;
     const request = context.request;
     
-    if (!kv) {
+    // 检查 birthday_kv 是否绑定
+    if (typeof birthday_kv === 'undefined') {
+      console.error('ERROR: birthday_kv is undefined');
       return new Response(JSON.stringify({
         success: false,
         message: '服务器配置错误：KV 存储未绑定'
@@ -34,7 +36,7 @@ export async function onRequestGet(context) {
     
     // 获取用户数据
     console.log('Getting user from KV:', `user:${username}`);
-    const userData = await kv.get(`user:${username}`);
+    const userData = await birthday_kv.get(`user:${username}`);
     if (!userData) {
       return new Response(JSON.stringify({
         success: false,
@@ -52,7 +54,7 @@ export async function onRequestGet(context) {
     console.log('Getting pages:', pageIds);
     const pages = [];
     for (const pageId of pageIds) {
-      const pageData = await kv.get(`page:${pageId}`);
+      const pageData = await birthday_kv.get(`page:${pageId}`);
       if (pageData) {
         pages.push(JSON.parse(pageData));
       }
