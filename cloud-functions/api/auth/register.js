@@ -6,12 +6,62 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   // 调试日志
-  console.log('=== Register API Debug ===');
-  console.log('env keys:', Object.keys(env));
-  console.log('birthday_kv exists:', !!env.birthday_kv);
+  console.log('=== Register API Start ===');
+  console.log('env type:', typeof env);
+  console.log('env keys:', env ? Object.keys(env) : 'env is null/undefined');
+  console.log('birthday_kv:', env?.birthday_kv);
+  console.log('birthday_kv type:', typeof env?.birthday_kv);
   
   try {
+    // 检查 env 和 birthday_kv
+    if (!env) {
+      console.error('ERROR: env is undefined');
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：env 未定义',
+        debug: { envExists: false }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    if (!env.birthday_kv) {
+      console.error('ERROR: birthday_kv is undefined');
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定',
+        debug: { 
+          envExists: true, 
+          envKeys: Object.keys(env),
+          birthday_kv_exists: false 
+        }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 检查 birthday_kv 是否有 get/put 方法
+    if (typeof env.birthday_kv.get !== 'function') {
+      console.error('ERROR: birthday_kv.get is not a function');
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储方法不可用',
+        debug: { 
+          birthday_kv_exists: true,
+          birthday_kv_type: typeof env.birthday_kv,
+          birthday_kv_methods: Object.keys(env.birthday_kv)
+        }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     const body = await request.json();
+    console.log('Request body:', JSON.stringify(body));
+    
     const { username, password } = body;
     
     // 验证输入
@@ -35,8 +85,25 @@ export async function onRequestPost(context) {
       });
     }
     
+    console.log('Checking if user exists:', username);
+    
     // 检查用户是否已存在
-    const existingUser = await env.birthday_kv.get(`user:${username}`);
+    let existingUser;
+    try {
+      existingUser = await env.birthday_kv.get(`user:${username}`);
+      console.log('Existing user:', existingUser);
+    } catch (kvError) {
+      console.error('KV get error:', kvError);
+      return new Response(JSON.stringify({
+        success: false,
+        message: '数据库查询错误：' + kvError.message,
+        debug: { kvOperation: 'get', error: kvError.message }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     if (existingUser) {
       return new Response(JSON.stringify({
         success: false,
@@ -47,8 +114,12 @@ export async function onRequestPost(context) {
       });
     }
     
+    console.log('Hashing password...');
+    
     // 简单密码哈希
     const passwordHash = await hashPassword(password);
+    
+    console.log('Creating user...');
     
     // 创建用户
     const user = {
@@ -58,13 +129,31 @@ export async function onRequestPost(context) {
       cards: []
     };
     
-    await env.birthday_kv.put(`user:${username}`, JSON.stringify(user));
+    console.log('Saving user to KV...');
+    
+    // 保存到 KV
+    try {
+      await env.birthday_kv.put(`user:${username}`, JSON.stringify(user));
+      console.log('User saved successfully');
+    } catch (kvError) {
+      console.error('KV put error:', kvError);
+      return new Response(JSON.stringify({
+        success: false,
+        message: '数据库保存错误：' + kvError.message,
+        debug: { kvOperation: 'put', error: kvError.message }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
     
     // 生成 token
     const token = btoa(JSON.stringify({
       username,
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000
     }));
+    
+    console.log('=== Register API Success ===');
     
     return new Response(JSON.stringify({
       success: true,
@@ -76,14 +165,19 @@ export async function onRequestPost(context) {
     });
     
   } catch (error) {
-    console.error('Register API Error:', error);
-    console.error('env.birthday_kv:', env.birthday_kv);
+    console.error('=== Register API Error ===');
+    console.error('Error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message,
       debug: {
-        envKeys: Object.keys(env),
-        birthday_kv_exists: !!env.birthday_kv
+        errorType: error.name,
+        errorMessage: error.message,
+        envExists: !!env,
+        birthday_kv_exists: !!(env && env.birthday_kv)
       }
     }), {
       status: 500,
