@@ -23,7 +23,7 @@ export async function onRequestDelete(context) {
     
     // 验证 token
     const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Basic ')) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(JSON.stringify({
         success: false,
         message: '未授权'
