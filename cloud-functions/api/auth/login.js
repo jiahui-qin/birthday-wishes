@@ -5,6 +5,11 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
   
+  // 调试日志
+  console.log('=== Login API Debug ===');
+  console.log('env keys:', Object.keys(env));
+  console.log('birthday_kv exists:', !!env.birthday_kv);
+  
   try {
     const body = await request.json();
     const { username, password } = body;

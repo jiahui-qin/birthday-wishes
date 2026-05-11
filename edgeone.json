@@ -7,6 +7,6 @@
     "output": "dist"
   },
   "functions": {
-    "directory": "node-functions"
+    "directory": "cloud-functions"
   }
 }

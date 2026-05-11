@@ -5,6 +5,11 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
   
+  // 调试日志
+  console.log('=== Register API Debug ===');
+  console.log('env keys:', Object.keys(env));
+  console.log('birthday_kv exists:', !!env.birthday_kv);
+  
   try {
     const body = await request.json();
     const { username, password } = body;
@@ -71,9 +76,15 @@ export async function onRequestPost(context) {
     });
     
   } catch (error) {
+    console.error('Register API Error:', error);
+    console.error('env.birthday_kv:', env.birthday_kv);
     return new Response(JSON.stringify({
       success: false,
-      message: '服务器错误：' + error.message
+      message: '服务器错误：' + error.message,
+      debug: {
+        envKeys: Object.keys(env),
+        birthday_kv_exists: !!env.birthday_kv
+      }
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
