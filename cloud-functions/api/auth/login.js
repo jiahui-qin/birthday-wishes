@@ -3,15 +3,26 @@
  * POST /api/auth/login
  */
 export async function onRequestPost(context) {
-  const { request, env } = context;
-  
-  // 调试日志
-  console.log('=== Login API Debug ===');
-  console.log('env keys:', Object.keys(env));
-  console.log('birthday_kv exists:', !!env.birthday_kv);
+  console.log('=== Login API Start ===');
+  console.log('birthday_kv exists:', !!(context.env && context.env.birthday_kv));
   
   try {
+    const request = context.request;
+    const kv = context.env.birthday_kv;
+    
+    if (!kv) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     const body = await request.json();
+    console.log('Login attempt:', body.username);
+    
     const { username, password } = body;
     
     // 验证输入
@@ -26,7 +37,10 @@ export async function onRequestPost(context) {
     }
     
     // 获取用户
-    const userData = await env.birthday_kv.get(`user:${username}`);
+    console.log('Getting user from KV:', `user:${username}`);
+    const userData = await kv.get(`user:${username}`);
+    console.log('User data:', userData);
+    
     if (!userData) {
       return new Response(JSON.stringify({
         success: false,
@@ -41,6 +55,8 @@ export async function onRequestPost(context) {
     
     // 验证密码
     const passwordHash = await hashPassword(password);
+    console.log('Password check:', passwordHash, user.password);
+    
     if (passwordHash !== user.password) {
       return new Response(JSON.stringify({
         success: false,
@@ -57,6 +73,8 @@ export async function onRequestPost(context) {
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000
     }));
     
+    console.log('=== Login API Success ===');
+    
     return new Response(JSON.stringify({
       success: true,
       message: '登录成功',
@@ -67,6 +85,10 @@ export async function onRequestPost(context) {
     });
     
   } catch (error) {
+    console.error('=== Login API Error ===');
+    console.error('Error:', error);
+    console.error('Error message:', error.message);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message

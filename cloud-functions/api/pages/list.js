@@ -3,9 +3,22 @@
  * GET /api/pages/list?username=xxx
  */
 export async function onRequestGet(context) {
-  const { request, env } = context;
+  console.log('=== Pages List API Start ===');
   
   try {
+    const kv = context.env.birthday_kv;
+    const request = context.request;
+    
+    if (!kv) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     const url = new URL(request.url);
     const username = url.searchParams.get('username');
     
@@ -20,7 +33,8 @@ export async function onRequestGet(context) {
     }
     
     // 获取用户数据
-    const userData = await env.birthday_kv.get(`user:${username}`);
+    console.log('Getting user from KV:', `user:${username}`);
+    const userData = await kv.get(`user:${username}`);
     if (!userData) {
       return new Response(JSON.stringify({
         success: false,
@@ -35,13 +49,16 @@ export async function onRequestGet(context) {
     const pageIds = user.cards || [];
     
     // 获取所有页面数据
+    console.log('Getting pages:', pageIds);
     const pages = [];
     for (const pageId of pageIds) {
-      const pageData = await env.birthday_kv.get(`page:${pageId}`);
+      const pageData = await kv.get(`page:${pageId}`);
       if (pageData) {
         pages.push(JSON.parse(pageData));
       }
     }
+    
+    console.log('=== Pages List API Success ===');
     
     return new Response(JSON.stringify({
       success: true,
@@ -51,6 +68,9 @@ export async function onRequestGet(context) {
     });
     
   } catch (error) {
+    console.error('=== Pages List API Error ===');
+    console.error('Error:', error);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message

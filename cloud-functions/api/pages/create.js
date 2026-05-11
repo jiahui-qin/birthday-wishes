@@ -3,14 +3,23 @@
  * POST /api/pages/create
  */
 export async function onRequestPost(context) {
-  const { request, env } = context;
-  
-  // 调试日志
-  console.log('=== Create Page API Debug ===');
-  console.log('env keys:', Object.keys(env));
-  console.log('birthday_kv exists:', !!env.birthday_kv);
+  console.log('=== Create Page API Start ===');
+  console.log('birthday_kv exists:', !!(context.env && context.env.birthday_kv));
   
   try {
+    const kv = context.env.birthday_kv;
+    const request = context.request;
+    
+    if (!kv) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     // 验证 token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -78,15 +87,19 @@ export async function onRequestPost(context) {
       likes: 0
     };
     
+    console.log('Saving page to KV:', pageId);
+    
     // 保存到 KV
-    await env.birthday_kv.put(`page:${pageId}`, JSON.stringify(pageData));
+    await kv.put(`page:${pageId}`, JSON.stringify(pageData));
     
     // 更新用户的页面列表
-    const userData = await env.birthday_kv.get(`user:${username}`);
+    const userData = await kv.get(`user:${username}`);
     const user = JSON.parse(userData);
     if (!user.cards) user.cards = [];
     user.cards.push(pageId);
-    await env.birthday_kv.put(`user:${username}`, JSON.stringify(user));
+    await kv.put(`user:${username}`, JSON.stringify(user));
+    
+    console.log('=== Create Page API Success ===');
     
     return new Response(JSON.stringify({
       success: true,
@@ -97,6 +110,9 @@ export async function onRequestPost(context) {
     });
     
   } catch (error) {
+    console.error('=== Create Page API Error ===');
+    console.error('Error:', error);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message

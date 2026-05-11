@@ -3,10 +3,22 @@
  * DELETE /api/pages/delete/[id]
  */
 export async function onRequestDelete(context) {
-  const { request, env } = context;
-  const pageId = context.params.id;
+  console.log('=== Delete Page API Start ===');
   
   try {
+    const kv = context.env.birthday_kv;
+    const request = context.request;
+    
+    if (!kv) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     // 验证 token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -44,8 +56,11 @@ export async function onRequestDelete(context) {
       });
     }
     
+    const pageId = context.params.id;
+    console.log('Deleting page:', pageId);
+    
     // 获取页面数据
-    const pageData = await env.birthday_kv.get(`page:${pageId}`);
+    const pageData = await kv.get(`page:${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -70,20 +85,22 @@ export async function onRequestDelete(context) {
     }
     
     // 删除页面
-    await env.birthday_kv.delete(`page:${pageId}`);
+    await kv.delete(`page:${pageId}`);
     
     // 删除相关点赞数据
-    await env.birthday_kv.delete(`likes:${pageId}`);
+    await kv.delete(`likes:${pageId}`);
     
     // 更新用户的页面列表
-    const userData = await env.birthday_kv.get(`user:${username}`);
+    const userData = await kv.get(`user:${username}`);
     if (userData) {
       const user = JSON.parse(userData);
       if (user.cards) {
         user.cards = user.cards.filter(id => id !== pageId);
-        await env.birthday_kv.put(`user:${username}`, JSON.stringify(user));
+        await kv.put(`user:${username}`, JSON.stringify(user));
       }
     }
+    
+    console.log('=== Delete Page API Success ===');
     
     return new Response(JSON.stringify({
       success: true,
@@ -93,6 +110,9 @@ export async function onRequestDelete(context) {
     });
     
   } catch (error) {
+    console.error('=== Delete Page API Error ===');
+    console.error('Error:', error);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message

@@ -3,10 +3,22 @@
  * PUT /api/pages/update/[id]
  */
 export async function onRequestPut(context) {
-  const { request, env } = context;
-  const pageId = context.params.id;
+  console.log('=== Update Page API Start ===');
   
   try {
+    const kv = context.env.birthday_kv;
+    const request = context.request;
+    
+    if (!kv) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '服务器配置错误：KV 存储未绑定'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     // 验证 token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -44,8 +56,11 @@ export async function onRequestPut(context) {
       });
     }
     
+    const pageId = context.params.id;
+    console.log('Updating page:', pageId);
+    
     // 获取页面数据
-    const pageData = await env.birthday_kv.get(`page:${pageId}`);
+    const pageData = await kv.get(`page:${pageId}`);
     if (!pageData) {
       return new Response(JSON.stringify({
         success: false,
@@ -78,7 +93,9 @@ export async function onRequestPut(context) {
     if (theme) page.theme = theme;
     if (musicUrl !== undefined) page.musicUrl = musicUrl;
     
-    await env.birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+    await kv.put(`page:${pageId}`, JSON.stringify(page));
+    
+    console.log('=== Update Page API Success ===');
     
     return new Response(JSON.stringify({
       success: true,
@@ -88,6 +105,9 @@ export async function onRequestPut(context) {
     });
     
   } catch (error) {
+    console.error('=== Update Page API Error ===');
+    console.error('Error:', error);
+    
     return new Response(JSON.stringify({
       success: false,
       message: '服务器错误：' + error.message
