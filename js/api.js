@@ -58,11 +58,15 @@ class BirthdayAPI {
      */
     async listPages() {
         const token = localStorage.getItem('auth_token');
+        const username = localStorage.getItem('auth_username');
         if (!token) {
             return { success: false, message: '请先登录' };
         }
+        if (!username) {
+            return { success: false, message: '用户信息缺失' };
+        }
 
-        const response = await fetch(`${API_BASE}/pages/list`, {
+        const response = await fetch(`${API_BASE}/pages/list?username=${encodeURIComponent(username)}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

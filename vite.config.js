@@ -10,8 +10,10 @@ function copyStaticAssets() {
     closeBundle() {
       const srcCss = resolve(__dirname, 'css');
       const srcJs = resolve(__dirname, 'js');
+      const srcTemplates = resolve(__dirname, 'templates');
       const destCss = resolve(__dirname, 'dist/css');
       const destJs = resolve(__dirname, 'dist/js');
+      const destTemplates = resolve(__dirname, 'dist/templates');
 
       try {
         // 复制 css 文件夹
@@ -28,6 +30,14 @@ function copyStaticAssets() {
       } catch (err) {
         console.warn('⚠ 复制 js/ 失败:', err.message);
       }
+
+      try {
+        // 复制 templates 文件夹
+        cpSync(srcTemplates, destTemplates, { recursive: true });
+        console.log('✓ 已复制 templates/ 到 dist/');
+      } catch (err) {
+        console.warn('⚠ 复制 templates/ 失败:', err.message);
+      }
     },
   };
 }
@@ -41,6 +51,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
+        page: resolve(__dirname, 'page.html'),
       },
     },
   },
