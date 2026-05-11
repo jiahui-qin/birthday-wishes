@@ -33,7 +33,7 @@ export async function onRequestPut(context) {
       });
     }
     
-    const token = authHeader.replace('Basic ', '');
+    const token = authHeader.replace('Bearer ', '');
     let username;
     
     try {
