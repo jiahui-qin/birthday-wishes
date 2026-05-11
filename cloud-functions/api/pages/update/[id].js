@@ -1,0 +1,99 @@
+/**
+ * 更新页面 API
+ * PUT /api/pages/update/[id]
+ */
+export async function onRequestPut(context) {
+  const { request, env } = context;
+  const pageId = context.params.id;
+  
+  try {
+    // 验证 token
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '未授权'
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const token = authHeader.replace('Basic ', '');
+    let username;
+    
+    try {
+      const tokenData = JSON.parse(atob(token));
+      if (tokenData.exp < Date.now()) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Token 已过期'
+        }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      username = tokenData.username;
+    } catch (e) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Token 无效'
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 获取页面数据
+    const pageData = await env.birthday_kv.get(`page:${pageId}`);
+    if (!pageData) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '页面不存在'
+      }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const page = JSON.parse(pageData);
+    
+    // 验证权限
+    if (page.username !== username) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: '无权限修改此页面'
+      }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 更新页面
+    const body = await request.json();
+    const { title, message, theme, musicUrl } = body;
+    
+    if (title) page.title = title;
+    if (message) page.message = message;
+    if (theme) page.theme = theme;
+    if (musicUrl !== undefined) page.musicUrl = musicUrl;
+    
+    await env.birthday_kv.put(`page:${pageId}`, JSON.stringify(page));
+    
+    return new Response(JSON.stringify({
+      success: true,
+      message: '页面更新成功'
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+  } catch (error) {
+    return new Response(JSON.stringify({
+      success: false,
+      message: '服务器错误：' + error.message
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
