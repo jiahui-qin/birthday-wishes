@@ -35,3 +35,9 @@ coverage/
 
 # ===== 构建产物 =====
 dist/
+
+# Tencent Cloud EdgeOne
+.env
+.edgeone/*
+.tef_dist/*
+  

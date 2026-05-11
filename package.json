@@ -7,10 +7,17 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["birthday", "wishes", "celebration"],
+  "keywords": [
+    "birthday",
+    "wishes",
+    "celebration"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "vite": "^5.0.0"
+  },
+  "devDependencies": {
+    "edgeone": "^1.4.8"
   }
 }
